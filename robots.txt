@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wonderwall0208.github.io/sitemap.xml
