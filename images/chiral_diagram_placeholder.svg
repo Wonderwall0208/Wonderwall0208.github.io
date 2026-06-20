@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 240" role="img" aria-label="Two helical chains meeting at a chiral interface">
+  <style>
+    .axis { stroke: #c9ced6; stroke-width: 1.5; }
+    .chainL { stroke: #2f54eb; }
+    .chainR { stroke: #e8590c; }
+    .node { fill: #ffffff; stroke-width: 2; }
+    .lbl { fill: #545b66; font: 600 14px -apple-system, "Segoe UI", sans-serif; }
+    .iface { stroke: #8b919c; stroke-width: 1.5; stroke-dasharray: 5 5; }
+    @media (prefers-color-scheme: dark) {
+      .axis { stroke: #343a45; }
+      .chainL { stroke: #6b8aff; }
+      .chainR { stroke: #ff8f57; }
+      .node { fill: #181b22; }
+      .lbl { fill: #a8aeb9; }
+      .iface { stroke: #6f7682; }
+    }
+  </style>
+  <!-- center interface -->
+  <line class="iface" x1="360" y1="24" x2="360" y2="216"/>
+  <text class="lbl" x="360" y="232" text-anchor="middle">chiral interface</text>
+
+  <!-- left-handed helix (blue) -->
+  <g class="chainL" fill="none" stroke-width="3">
+    <path d="M40,120 C70,60 110,60 140,120 S210,180 240,120 S310,60 340,120"/>
+  </g>
+  <g class="chainL" fill="none" stroke-width="3" opacity="0.45">
+    <path d="M40,120 C70,180 110,180 140,120 S210,60 240,120 S310,180 340,120"/>
+  </g>
+  <!-- right-handed helix (orange), mirror -->
+  <g class="chainR" fill="none" stroke-width="3">
+    <path d="M680,120 C650,60 610,60 580,120 S510,180 480,120 S410,60 380,120"/>
+  </g>
+  <g class="chainR" fill="none" stroke-width="3" opacity="0.45">
+    <path d="M680,120 C650,180 610,180 580,120 S510,60 480,120 S410,180 380,120"/>
+  </g>
+
+  <!-- nodes -->
+  <g>
+    <circle class="node chainL" cx="40" cy="120" r="5" stroke="#2f54eb"/>
+    <circle class="node chainL" cx="140" cy="120" r="5" stroke="#2f54eb"/>
+    <circle class="node chainL" cx="240" cy="120" r="5" stroke="#2f54eb"/>
+    <circle class="node chainL" cx="340" cy="120" r="5" stroke="#2f54eb"/>
+    <circle class="node chainR" cx="380" cy="120" r="5" stroke="#e8590c"/>
+    <circle class="node chainR" cx="480" cy="120" r="5" stroke="#e8590c"/>
+    <circle class="node chainR" cx="580" cy="120" r="5" stroke="#e8590c"/>
+    <circle class="node chainR" cx="680" cy="120" r="5" stroke="#e8590c"/>
+  </g>
+
+  <text class="lbl" x="150" y="30" text-anchor="middle">left-handed chain</text>
+  <text class="lbl" x="570" y="30" text-anchor="middle">right-handed chain</text>
+</svg>

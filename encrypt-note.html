@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Encrypt a Note — Keita Matsubara</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .tool { max-width: 560px; }
+    .drop {
+      border: 1.5px dashed var(--border-strong);
+      border-radius: var(--radius);
+      padding: 26px;
+      text-align: center;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .drop:hover, .drop.over { border-color: var(--accent); background: var(--bg-soft); }
+    .drop strong { color: var(--text); }
+    .field { margin-top: 18px; }
+    .field label { display: block; font-size: .9rem; color: var(--text-soft); margin-bottom: 6px; }
+    .out { margin-top: 18px; }
+    .ok { color: var(--c-teal); font-weight: 600; }
+    .warn { color: #e8590c; }
+    code { background: var(--bg-soft); padding: 1px 6px; border-radius: 5px; font-size: .9em; }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html">Keita <span>Matsubara</span></a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="research.html">Research</a>
+        <a href="publications.html">Publications</a>
+        <a href="notes.html">Notes</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <h1>Encrypt a Note</h1>
+      <p class="role">🔒 Everything runs locally — the file and password never leave this page.</p>
+    </div>
+  </div>
+
+  <main>
+    <div class="wrap tool">
+      <section>
+        <p>Pick a PDF and a password. You'll get an encrypted <code>.enc</code> file to put in the
+          <code>notes/</code> folder. Only someone with the password can open it on the
+          <a href="notes.html">Notes</a> page.</p>
+
+        <div class="drop" id="drop">
+          <strong id="drop-name">Click to choose a PDF</strong><br>
+          <span style="font-size:.88rem">or drag &amp; drop it here</span>
+          <input type="file" id="file" accept="application/pdf" hidden>
+        </div>
+
+        <div class="field">
+          <label for="pw">Password</label>
+          <input class="pw-input" id="pw" type="text" placeholder="Choose a password"
+                 autocomplete="off" spellcheck="false">
+        </div>
+
+        <div class="field">
+          <button class="pw-btn primary" id="go" style="flex:none; width:100%;" disabled>Encrypt &amp; download .enc</button>
+        </div>
+
+        <div class="out" id="out"></div>
+      </section>
+
+      <section>
+        <h2 class="section-title">Then</h2>
+        <ol>
+          <li>Move the downloaded <code>.enc</code> into <code>notes/</code>.</li>
+          <li>In <code>notes.html</code>, add a list item pointing <code>data-enc</code> to it.</li>
+          <li>Do <strong>not</strong> upload the original <code>.pdf</code> — only the <code>.enc</code>.</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap"><span>© 2026 Keita Matsubara</span><span>Local encryption tool</span></div>
+  </footer>
+
+  <script>
+  (function () {
+    "use strict";
+    const ITERATIONS = 200000;
+    const fileInput = document.getElementById("file");
+    const drop = document.getElementById("drop");
+    const dropName = document.getElementById("drop-name");
+    const pw = document.getElementById("pw");
+    const go = document.getElementById("go");
+    const out = document.getElementById("out");
+    let file = null;
+
+    function refresh() { go.disabled = !(file && pw.value); }
+
+    function setFile(f) {
+      if (!f) return;
+      if (f.type !== "application/pdf" && !f.name.toLowerCase().endsWith(".pdf")) {
+        out.innerHTML = '<span class="warn">Please choose a PDF file.</span>';
+        return;
+      }
+      file = f;
+      dropName.textContent = f.name;
+      out.textContent = "";
+      refresh();
+    }
+
+    drop.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", () => setFile(fileInput.files[0]));
+    ["dragover", "dragenter"].forEach((ev) =>
+      drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+    ["dragleave", "drop"].forEach((ev) =>
+      drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+    drop.addEventListener("drop", (e) => setFile(e.dataTransfer.files[0]));
+    pw.addEventListener("input", refresh);
+
+    go.addEventListener("click", async () => {
+      if (!file || !pw.value) return;
+      go.disabled = true;
+      out.textContent = "Encrypting…";
+      try {
+        const data = new Uint8Array(await file.arrayBuffer());
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const baseKey = await crypto.subtle.importKey(
+          "raw", new TextEncoder().encode(pw.value), "PBKDF2", false, ["deriveKey"]);
+        const key = await crypto.subtle.deriveKey(
+          { name: "PBKDF2", salt, iterations: ITERATIONS, hash: "SHA-256" },
+          baseKey, { name: "AES-GCM", length: 256 }, false, ["encrypt"]);
+        const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, data));
+        const blob = new Blob([salt, iv, ct], { type: "application/octet-stream" });
+        const name = file.name.replace(/\.pdf$/i, "") + ".enc";
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = name;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+        out.innerHTML = '<span class="ok">✓ Downloaded ' + name +
+          '</span> — move it into <code>notes/</code>.';
+      } catch (e) {
+        out.innerHTML = '<span class="warn">Encryption failed: ' + e.message + '</span>';
+      } finally {
+        go.disabled = false;
+        refresh();
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

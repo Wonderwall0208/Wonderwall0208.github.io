@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notes — Keita Matsubara</title>
+  <meta name="description" content="Study notes and write-ups (PDF) by Keita Matsubara.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html">Keita <span>Matsubara</span></a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="research.html">Research</a>
+        <a href="publications.html">Publications</a>
+        <a href="notes.html" class="active">Notes</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="wrap">
+      <h1>Notes</h1>
+      <p class="role">Study notes &amp; write-ups · <span class="lock-hint">🔒 password required</span></p>
+    </div>
+  </div>
+
+  <main>
+    <div class="wrap">
+
+      <!--
+        =====================================================================
+        HOW TO ADD A NOTE
+        ---------------------------------------------------------------------
+        1. Encrypt your PDF with a password:
+             - open  encrypt-note.html  in your browser (it runs locally),
+               pick the PDF, type a password, and download the .enc file.
+        2. Put the downloaded  .enc  file in the  notes/  folder,
+           e.g.  notes/my-note.enc   (do NOT upload the plain .pdf).
+        3. Copy one <li>...</li> block below and edit:
+             - data-enc  -> path to the .enc file
+             - data-name -> the title (also shown in the password dialog)
+             - note-name -> the title shown in the list
+             - note-desc -> (optional) one-line description; delete if unused
+             - note-date -> (optional) date
+        Newest at the top. The password never leaves the browser.
+        =====================================================================
+      -->
+      <section>
+        <ol class="note-list">
+
+          <li>
+            <a class="note-link" href="notes/chirality-overview.enc"
+               data-enc="notes/chirality-overview.enc"
+               data-name="Chirality in condensed matter — overview">
+              <span class="note-num">01</span>
+              <span class="note-body">
+                <span class="note-name">Chirality in condensed matter — overview</span>
+                <span class="note-desc">Symmetry breaking, structural chirality, and where it shows up in transport.</span>
+              </span>
+              <span class="note-side">
+                <span class="note-date">2026</span>
+                <span class="badge-lock">🔒 PDF</span>
+              </span>
+            </a>
+          </li>
+
+          <!-- Duplicate the block above for each new note. -->
+
+        </ol>
+      </section>
+
+      <!-- Password dialog -->
+      <div class="pw-modal" id="pw-modal" role="dialog" aria-modal="true" aria-labelledby="pw-title">
+        <form class="pw-card" id="pw-form">
+          <div class="pw-lock">🔒</div>
+          <h2 class="pw-title" id="pw-title">Protected note</h2>
+          <p class="pw-sub">Enter the password to open<br><strong id="pw-note-name"></strong></p>
+          <input class="pw-input" id="pw-input" type="password" placeholder="Password"
+                 autocomplete="off" autocapitalize="off" spellcheck="false">
+          <p class="pw-error" id="pw-error"></p>
+          <div class="pw-actions">
+            <button type="button" class="pw-btn ghost" id="pw-cancel">Cancel</button>
+            <button type="submit" class="pw-btn primary" id="pw-submit">Unlock</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <span>© 2026 Keita Matsubara</span>
+      <span>Tokyo Metropolitan University</span>
+    </div>
+  </footer>
+  <script src="notes.js"></script>
+</body>
+</html>

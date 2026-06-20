@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Local dev / preview config
+.claude/
+
+# NEVER publish plaintext notes — only the encrypted .enc files belong online
+notes/*.pdf
+
+# Unencrypted source copy of the sample note
+images/chiral.pdf
